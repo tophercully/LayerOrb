@@ -1,6 +1,6 @@
 w= 1600
 h = 2000
-marg = w*0.025
+marg = w*0.1
 
 let shade;
 function preload() {
@@ -19,6 +19,11 @@ pxSize = url.searchParams.get('size')
 //declarations
 
 //parameters
+numColors = randomInt(2, truePal.length)
+numLayers = 3
+numPasses = 10
+fullness = 30
+rot = randomVal(0, 360)
 
 function setup() {
   var isMobile = false; //initiate as false
@@ -35,39 +40,117 @@ if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine
   } else if (pxSize == 3) {
     pixelDensity(3)
   }
-
+  recur = createGraphics(w, h, WEBGL)
+  canv = createGraphics(w, h)
   p = createGraphics(w, h)
   c = createGraphics(w, h)
+  g = createGraphics(w, h)
   angleMode(DEGREES)
   p.angleMode(DEGREES)
   c.angleMode(DEGREES)
   noLoop()
   p.noLoop()
   c.noLoop()
+  // p.noSmooth()
+  // c.noSmooth()
+
+  center = createVector(randomVal(0, w), randomVal(0, h))
 }
 
 function draw() {
   background(bgc)
-  p.background(bgc)
+  p.background('white')
+  c.background(0)
+  c.translate(w/2, h/2)
+  c.rotate(rot)
+  c.translate(-w/2, -h/2)
 
   //Sketch
 
+  //Build the gradient LUT
+  gradLUT()
+
+  //setting safe to draw area/cutout
+  
+  c.noStroke()
+  // cShaper(w/2, h/2, w*0.9)
+  // cSpotLight(w/2, h/2, w*0.5)
+
+  for(let i = 0; i < fullness; i++) {
+    c.fill(randomVal(240, 255))
+    here = ptFromAng(w/2, h, randomVal(-180, 0), randomVal(0, w*0.5))
+    c.rectMode(CENTER)
+    cShaper(here.x, here.y, randomVal(100, w*0.6))
+    // cSpotLight(here.x, here.y, randomVal(100, w*0.6))
+
+    there = ptFromAng(w/2, 0, randomVal(0, 180), randomVal(0, w*0.5))
+    cShaper(there.x, there.y, randomVal(100, w*0.6))
+    
+  }
+  
+
+  //draw design
+  for(let i = 0; i < numLayers; i++) {
+    p.push()
+    p.translate(w/2, h/2)
+    p.rotate(randomVal(0, 360))
+    p.translate(-w/2, -h/2)
+    sineWave()
+    p.pop()
+    // p.fill(chroma('black').alpha(0.05).hex())
+    // p.circle(w/2, h/2, randomVal(100, w/2))
+  }
+  
+
 
   //Post processing
-   copy(p, 0, 0, w, h, 0, 0, w, h)
+  //  recur.copy(p, 0, 0, w, h, 0, 0, w, h)
+   lastPass = false
    bgc = color(bgc)
-   shader(shade)
+   recur.shader(shade)
    shade.setUniform("u_resolution", [w, h]);
    shade.setUniform("p", p);
+   shade.setUniform("g", g);
+   shade.setUniform("c", c);
+   shade.setUniform("center",[center.x/w, center.y/h]);
    shade.setUniform("seed", randomVal(0, 10));
    shade.setUniform("marg", map(marg, 0, w, 0, 1));
+   shade.setUniform("lastPass", lastPass)
    shade.setUniform("bgc", [
      bgc.levels[0] / 255,
      bgc.levels[1] / 255,
      bgc.levels[2] / 255,
    ]);
 
-   rect(0, 0, w, h)
+   //recursive passes
+   
+   for(let i = 0; i < numPasses; i++) {//6
+    if(i == 0) {
+      firstPass = true
+    } else {
+      firstPass = false
+    }
+    shade.setUniform("firstPass", firstPass)
+    // gradLUT()
+    shade.setUniform("intens", 1)
+    shade.setUniform("p", p)    
+    dir = plusOrMin(1)
+    shade.setUniform("dir", dir)
+    recur.rect(0, 0, w, h)
+    p.image(recur, 0, 0)
+   }
+   //final display
+   lastPass = true
+   shade.setUniform("lastPass", lastPass)
+   shade.setUniform("p", p)
+  //  shade.setUniform("g", p);
+  //  shade.setUniform("g", p)
+   recur.rect(0, 0, w, h)
+   image(recur, -w/2, -h/2)
+
+   
+   
+
 
    fxpreview()
 }

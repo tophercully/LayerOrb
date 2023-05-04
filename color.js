@@ -25,7 +25,7 @@ bgNames = [
 ];
 //Background color parameters
 bgNum = randomInt(0, 9);
-bgc = bgCols[bgNum];
+bgc = '#ECECEE'//bgCols[bgNum];
 bgName = bgNames[bgNum];
 
 //Make a color that always contrasts bgc
@@ -51,7 +51,14 @@ const source = [
   "#EBD5D7",
 ];
 
-const shepard = ["#3D5A80", "#98C1D9", "#E0FBFC", "#FF4D21", "#293241", frameCol];
+const shepard = [
+  "#3D5A80", 
+"#98C1D9", 
+// "#E0FBFC", 
+"#FF4D21", 
+"#293241", 
+frameCol
+];
 
 const toyBlocks = ["#EBB701", "#EA3F23", "#00A2C8", frameCol, "#EAEAEA"];
 
@@ -159,6 +166,75 @@ const oilPastel = [
 
 const popper = ["#F5D365", "#E66C64", "#92BCC8", "#4F7C9A", frameCol];
 
+const bau = [
+  "#1267b7",
+  "#ec3e2b",
+  "#f6b81a",
+  "#E4D6C2",
+  "#1D1F22",
+]
+
+const elliot = [
+  "#E73542",
+  "#F6A026",
+  "#2CA8C4",
+  "#EE7140",
+  "#289C5B",
+  // "#F5E2CC",
+  // "#161117"
+]
+const vint = [
+  // 'black',
+  // '#FDDEBD',
+  '#3255A4',
+  '#62A8E5',
+  '#FF8E91'
+]
+const wildberry = [
+  'black',
+  '#62A8E5',
+  '#BB76CF',
+  '#407060',
+  '#FF6C2F',
+  '#fff0e0',
+]
+
+const blockA = ["#E4E7E0","#F0829D","#428E8A","#F4E8AE","#109BC4","#1C1E1B"]
+
+const blockB = ["#1D9042","#212322","#0C8ABB","#E2E5DE","#C77B99","#E97D48","#DDC267"]
+
+const blockC = ["#1F1E23","#0068C1","#E7CF63","#F3669A","#D6D8D5"]
+
+const burn = ["#00b4e2","#fd4f92","#ff7b89","#ffa070","#ffd403"]
+
+const scifi = ["#4ea459","#47bc89","#38928a","#e2a48e","#c35548","#33778a","#8bd6e8","#11120a","#f8ddc3","#a7d0c0"]
+
+const yeller = ["#29221c","#8e3b2d","#b27469","#f49f10","#fedb49","#e7d0c0","#ceb29a","#c9ced1","#b0b8bb","#646d4e"]
+
+const overlook = ["#3d4d20","#ad0b08","#1d5473","#798b97","#edd2b7","#b76439","#d2955f","#282723"]
+
+const helmetFace = ["#617a5c","#a3ab86","#accbf9","#f3c9f4","#030305","#cfd9e3","#e3e4e8"]
+
+const fullColor = ["#1f46c8", "#44B8F5", "#EF3C19", "#FFEB00", "#4FA55E", '#b44fd0', "#ea5920", '#FF48B0', '#37cdb2']
+
+const retroBaby = [
+  '#8fb886', 
+"#e7b763", 
+"#46abc7", 
+"#9a0603", 
+"#fc5207"]
+
+comboA = ["#142e70", "#f74d13"]
+comboB = ["#efa738","#3796f0"] //LOVE
+comboC = ["#F56905", "#074EE5"] //also love
+comboD = ["#2C4CB8","#EF3C19"]// so poppin
+comboE = ['#F57103', '#00598D', '#214C25'] //love this
+
+comboF = ['#de3be1', "#e9a32b"]
+
+achro = ['black', 'white']
+
+
 const pals = [source, shepard, toyBlocks, mcWoot, soft, jazzy, ceramic, oilPastel, mcNay, oKeefe, flowerMarket, oilPaint];
 
 const palNames = [
@@ -178,7 +254,7 @@ const palNames = [
 
 //Palette parameters
 palNum = randomInt(0, pals.length-1);
-pal = pals[palNum];
+pal = shepard//pals[palNum];
 palName = palNames[palNum];
 
 console.log(palName)
@@ -207,7 +283,7 @@ for (let i = 0; i < pal.length-1; i++) {
 }
 
 //Combine palettes and shuffle that full palette
-fullPal = [].concat(pal, darkerPal, lighterPal);
+fullPal = [].concat(pal, lighterPal, darkerPal);
 truePal = shuff(fullPal);
 
 //Pass our palette back to the CSS spinner

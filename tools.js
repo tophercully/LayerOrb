@@ -93,11 +93,107 @@ function updateURLParameter(url, param, paramVal)
 }
 
 function randColor() {
-  return chroma(truePal[randomInt(0, truePal.length-1)]).saturate(2).hex()
+  return chroma(truePal[randomInt(0, truePal.length-1)]).saturate(0).hex()
 }
 
 function angBetween(x1, y1, x2, y2) {
   return Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
 }
 
+function ptFromAng(xPosition, yPosition, ang, dis) {
+  xMod = cos(ang)*dis
+  yMod = sin(ang)*dis
+
+  return createVector((xPosition+xMod), (yPosition+yMod))
+}
+
+function plusOrMin(x) {
+  chance = fxrand() 
+  if(chance < 0.5) {
+    mod = 1
+  } else {
+    mod = -1
+  }
+
+  return x*mod
+}
 ////////////////////////////////////////
+
+function gradLUT() {
+  scl = 200
+    for(let y = 0; y < h; y+=w/scl) {
+      nY = map(y, 0, h, 0, 1)
+      colScale = chroma.scale(truePal.slice(0, numColors))//.classes(numColors)
+      hueCol = colScale(nY).hex()
+      col = hueCol
+      g.stroke(col)
+      g.strokeWeight(h/scl)
+      g.line(0, y, w,y)
+    }
+}
+
+function sineWave() {
+  capDecider = randomInt(0, 1)
+  if(capDecider == 0) {
+    p.strokeCap(SQUARE)
+  } else {
+    p.strokeCap(ROUND)
+  }
+  
+  
+  // p.drawingContext.setLineDash([randomVal(10, 500), randomVal(10, 500)])
+  rows = randomInt(2, 30)
+  cellH = (h-(marg*2))/rows
+  freq = randomVal(1, 4)
+  amp = randomVal(0, 1)
+  val = randomVal(0, 255)
+  wt = cellH/4
+  finalCol = chroma(val, val, val).alpha((randomVal(0.2, 0.7))+randomVal(-0.0001, 0.0001)).hex()
+  p.noFill()
+  p.strokeWeight(wt)
+  p.stroke(finalCol)
+  for(let y = 0; y < rows+1; y++) {
+    p.drawingContext.lineDashOffset=randomVal(0, 500)
+    p.beginShape()
+    for(let x = 0; x < w; x++) {
+      fullRot = map(x, 0, w, 0, 360)
+      yOff = map(sin(fullRot*freq), -1, 1, -wt*amp, wt*amp)
+      // yOff = map(noise(x*0.001), 0, 1, -wt*amp, wt*amp)
+      p.vertex(x, (y*cellH+(cellH/2))+yOff)
+    } 
+    p.endShape()
+  }
+}
+
+function cShaper(x, y, r) {
+  startAng = randomVal(0, 360)
+  numSides = randomInt(3, 7)
+  if(numSides > 6) {
+    numSides = 360
+  }
+  c.beginShape()
+  for(let i = 0; i < 360; i+= 360/numSides) {
+    xC = cos(startAng+i)*(r/2)
+    yC = sin(startAng+i)*(r/2)
+    c.vertex(x+xC, y+yC)
+  }
+  c.endShape(CLOSE)
+}
+
+function cSpotLight(x, y, r) {
+  dis = randomVal(0, r/2)
+  edge = ptFromAng(x, y, randomVal(0, 360), dis)
+  center = createVector(x, y)
+  dens = r
+  expo = 0.3
+
+  for(let i = 0; i < dens; i++) {
+
+    xC = map(i, 0, dens, center.x, edge.x)
+    yC = map(i, 0, dens, center.y, edge.y)
+    rad = map(i, 0, dens, r, 0)
+    val = map(pow(i, expo), pow(dens*0.1, expo), pow(dens, expo), 0, 1)
+    c.fill(chroma('white').alpha(val).hex())
+    c.circle(xC, yC, rad)
+  }
+}
