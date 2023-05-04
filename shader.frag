@@ -16,6 +16,8 @@ uniform float intens;
 uniform vec3 bgc;
 uniform vec2 center;
 uniform float marg;
+uniform float offsetAmt;
+uniform float rotAmt;
 uniform bool firstPass;
 uniform bool lastPass;
 
@@ -103,13 +105,13 @@ void main() {
   vec4 sampTexP = texture2D(p, st);
   vec2 sampLum = vec2(0.5, sampTexP.r);
   vec4 sampColVal = texture2D(g, sampLum);
-  float offAmt = 0.05*intens;//0.008
-  float rotMult = 2.0;
+  float offAmt = offsetAmt*intens;//0.008
+  float rotMult = rotAmt;
   float rotMod = map(st.y, 0.0, 1.0, 0.0, 1.0);
   if(st.y > 0.0+map(sampColVal.g, 0.0, 1.0, -offAmt, offAmt)*dir) {
     st.x -= center.x;
     st.y -= center.y;
-    st.xy *= rotate(map(sampColVal.b, 0.0, 1.0, -0.0174533*rotMult, 0.0174533*rotMult));
+    st.xy *= rotate(map(sampColVal.b, 0.0, 1.0, -0.0174533*rotMult, 0.0174533*rotMult)*dir);
     st.x += center.x;
     st.y += center.y;
   } else {
@@ -135,7 +137,7 @@ void main() {
   
 
   vec4 texC = texture2D(c, st);
-  vec4 texG = texture2D(g, stB);
+  vec4 texG = texture2D(g, st);
   vec4 texP = texture2D(p, st);
   vec2 lum = vec2(0.5, texP.r);
   // vec3 gradCol = vec3(sampTexG.r, sampTexG.g, sampTexG.b);
@@ -148,9 +150,9 @@ void main() {
   vec3 final = vec3(0.0);
   color = colVal.rgb;
 
-  if(firstPass == false) {
-    color = texP.rgb;
-  }
+  // if(firstPass == false) {
+  //   color = texP.rgb;
+  // }
 
   //debug p layer
   // color = vec3(texP.r, texP.g, texP.b);
@@ -169,8 +171,8 @@ void main() {
 
   if(lastPass == true) {
     if(color.rgb != bgc.rgb) {
-    color = adjustContrast(color, 1.0);
-    color = adjustSaturation(color, 0.5);
+    color = adjustContrast(color, 0.2);
+    color = adjustSaturation(color, 0.3);
       
       if(paperVal > 0.7 && paperVal < 1.0) {
         

@@ -19,10 +19,13 @@ pxSize = url.searchParams.get('size')
 //declarations
 
 //parameters
-numColors = randomInt(3, truePal.length)
-numLayers = 3
-numPasses = 6
-fullness = 30
+numColors = 3//randomInt(3, truePal.length)
+numLayers = 10
+numPasses = 6//randomInt(2, 6)
+totalDis = 0.01
+rotAmt = 20//randomVal(1, 10)
+offAmt = 0.005//randomVal(0.01, 0.5)//totalDis/numPasses
+fullness = randomInt(5, 30)
 rot = randomVal(0, 360)
 
 function setup() {
@@ -60,7 +63,7 @@ if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine
 function draw() {
   background(bgc)
   p.background('white')
-  c.background(0)
+  c.background(80)
   c.translate(w/2, h/2)
   c.rotate(rot)
   c.translate(-w/2, -h/2)
@@ -77,16 +80,23 @@ function draw() {
   // cSpotLight(w/2, h/2, w*0.5)
 
   for(let i = 0; i < fullness; i++) {
-    c.fill(randomVal(240, 255))
-    here = ptFromAng(w/2, h, randomVal(-180, 0), randomVal(0, w*0.5))
+    c.fill('white')
+    here = ptFromAng(w/2, h, randomVal(-180, 0), randomVal(0, w*0.4))
     c.rectMode(CENTER)
     cShaper(here.x, here.y, randomVal(100, w*0.6))
     // cSpotLight(here.x, here.y, randomVal(100, w*0.6))
 
-    there = ptFromAng(w/2, 0, randomVal(0, 180), randomVal(0, w*0.5))
+    there = ptFromAng(w/2, 0, randomVal(0, 180), randomVal(0, w*0.4))
     cShaper(there.x, there.y, randomVal(100, w*0.6))
     
   }
+
+  // for(let i = 0; i < fullness; i++) {
+  //   c.fill('white')
+  //   here = ptFromAng(w/2, h/2, randomVal(0, 360), randomVal(0, w*0.4))
+  //   c.rectMode(CENTER)
+  //   cShaper(here.x, here.y, randomVal(100, w*0.3))    
+  // }
   
 
   //draw design
@@ -112,6 +122,8 @@ function draw() {
    shade.setUniform("p", p);
    shade.setUniform("g", g);
    shade.setUniform("c", c);
+   shade.setUniform("offsetAmt", offAmt)
+   shade.setUniform("rotAmt", rotAmt)
    shade.setUniform("center",[center.x/w, center.y/h]);
    shade.setUniform("seed", randomVal(0, 10));
    shade.setUniform("marg", map(marg, 0, w, 0, 1));

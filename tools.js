@@ -121,6 +121,7 @@ function plusOrMin(x) {
 
 function gradLUT() {
   scl = 200
+  thisPal = [randColor(), 'black','white']
     for(let y = 0; y < h; y+=w/scl) {
       nY = map(y, 0, h, 0, 1)
       colScale = chroma.scale(truePal.slice(0, numColors))//.classes(numColors)
@@ -141,14 +142,13 @@ function sineWave() {
   }
   
   
-  // p.drawingContext.setLineDash([randomVal(10, 500), randomVal(10, 500)])
-  rows = randomInt(2, 5)
+  p.drawingContext.setLineDash([randomVal(10, 500), randomVal(10, 500)])
+  rows = randomInt(5, 20)
   cellH = (h-(marg*2))/rows
   freq = randomVal(1, 10)
-  amp = randomVal(0, 3)
-  val = randomVal(0, 255)
+  amp = randomVal(0, 1)
   wt = cellH/4
-  finalCol = chroma(val, val, val).alpha((randomVal(0.2, 0.7))+randomVal(-0.0001, 0.0001)).hex()
+  finalCol = chroma('black').alpha((2/numLayers)+randomVal(-0.0001, 0.0001)).hex()
   p.noFill()
   p.strokeWeight(wt)
   p.stroke(finalCol)
