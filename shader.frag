@@ -103,8 +103,8 @@ void main() {
   vec4 sampTexP = texture2D(p, st);
   vec2 sampLum = vec2(0.5, sampTexP.r);
   vec4 sampColVal = texture2D(g, sampLum);
-  float offAmt = 0.01*intens;//0.008
-  float rotMult = 3.0;
+  float offAmt = 0.05*intens;//0.008
+  float rotMult = 2.0;
   float rotMod = map(st.y, 0.0, 1.0, 0.0, 1.0);
   if(st.y > 0.0+map(sampColVal.g, 0.0, 1.0, -offAmt, offAmt)*dir) {
     st.x -= center.x;

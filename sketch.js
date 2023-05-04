@@ -19,9 +19,9 @@ pxSize = url.searchParams.get('size')
 //declarations
 
 //parameters
-numColors = randomInt(2, truePal.length)
+numColors = randomInt(3, truePal.length)
 numLayers = 3
-numPasses = 10
+numPasses = 6
 fullness = 30
 rot = randomVal(0, 360)
 

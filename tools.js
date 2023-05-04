@@ -142,10 +142,10 @@ function sineWave() {
   
   
   // p.drawingContext.setLineDash([randomVal(10, 500), randomVal(10, 500)])
-  rows = randomInt(2, 30)
+  rows = randomInt(2, 5)
   cellH = (h-(marg*2))/rows
-  freq = randomVal(1, 4)
-  amp = randomVal(0, 1)
+  freq = randomVal(1, 10)
+  amp = randomVal(0, 3)
   val = randomVal(0, 255)
   wt = cellH/4
   finalCol = chroma(val, val, val).alpha((randomVal(0.2, 0.7))+randomVal(-0.0001, 0.0001)).hex()
