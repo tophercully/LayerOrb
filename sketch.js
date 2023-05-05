@@ -18,16 +18,28 @@ pxSize = url.searchParams.get('size')
 
 //declarations
 bezPts = []
+legNums = []
 
 
 //parameters
-numColors = 3//randomInt(3, 5)
-numLayers = 6//randomInt(3, 10)
-numPasses = 6//randomInt(3, 8)//randomInt(2, 6)
+numColors = 5//randomInt(3, 5)
+numLayers = 30//randomInt(3, 10)
+numPasses = 3//randomInt(3, 8)//randomInt(2, 6)
+totalDis = 0.1
 rotAmt = 1.4//randomVal(1, 5)
-offAmt = 0.04//randomVal(0.005, 0.05)//totalDis/numPasses
+offAmt = 0.04//0.04//randomVal(0.005, 0.05)//totalDis/numPasses
 fullness = 100//randomInt(10, 30)
 rot = 0//randomVal(-10, 10)//randomVal(0, 360)
+
+cloudSz = w*0.3//randomVal(w*0.15, w*0.333)
+numLegs = 4
+
+//populate leg array
+for(let i = 0; i < fullness; i++) {
+  numLegs[i] = randomInt(0, 4)
+}
+
+shuffLegs = shuff(legNums)
 
 function setup() {
   var isMobile = false; //initiate as false
@@ -58,7 +70,7 @@ if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine
   // p.noSmooth()
   // c.noSmooth()
 
-  center = createVector(randomVal(-w, w*2), randomVal(-h, h*2))
+  center = createVector(randomVal(0, w), randomVal(0, h))
 }
 
 function draw() {
@@ -75,6 +87,7 @@ function draw() {
   gradLUT()
   //gradient background
   gradBG()
+  paintBG()
 
   //setting safe to draw area/cutout
   // cWave()
@@ -82,32 +95,42 @@ function draw() {
   c.noStroke()
   // cShaper(w/2, h/2, w*0.9)
   // cSpotLight(w/2, h/2, w*0.5)
-
-
   
-
+  // c.fill(200)
+  // c.circle(randomVal(0, w), randomVal(0, h*0.333), 150)
+  // for(let i = 0; i < 5; i++) {
+  //   dis = map(i, 0, 5, 0.75, 0)
+  //   val = map(i, 0, 5, 255, 0)
+  //   c.fill(val)
+  //   placard(dis)
+  // }
   
   //subject
-  centerX = w/2//randomVal(w*0.25, w*0.75)
-  xOff = randomVal(-300, 300)
+  centerX = w*0.5//randomVal(w*0.5, w*0.75)
+  xOff = 0//randomVal(-300, 300)
   for(let i = 0; i < fullness; i++) {
-    c.fill(randomVal(180, 255))
     
-    here = ptFromAng(centerX, h*0.2, randomVal(0, 180), randomVal(0, w*0.33))
+    
+    here = ptFromAng(centerX, h*0.5, randomVal(0, 360), randomVal(0, cloudSz))
+    anchor = createVector(randomVal(centerX+(cloudSz*1.75), centerX-(cloudSz*1.75)), h)
+    midAmt = randomVal(0.25, 0.85)
+    midPt = createVector(randomVal(centerX+(cloudSz*1.5), centerX-(cloudSz*1.5)), map(midAmt, 0, 1, here.y, anchor.y))
 
     //raindrops
-    for(let i = 0; i < 5; i++) {
-      // c.drawingContext.setLineDash([randomVal(100, 300), randomVal(100, 300)])
-      xMod = randomVal(-10, 10)
-      c.push()
-      c.stroke(randomVal(150, 255))
-      c.strokeWeight(randomVal(0.25, 1))
-      c.line(here.x+xMod, here.y, here.x+xMod+xOff, h)
-      c.pop()
-    }
+    // for(let i = 0; i < 5; i++) {
+    //   // c.drawingContext.setLineDash([randomVal(100, 300), randomVal(100, 300)])
+    //   xMod = randomVal(-10, 10)
+    //   c.push()
+    //   c.stroke(randomVal(150, 255))
+    //   c.strokeWeight(randomVal(0.25, 1))
+    //   // c.line(here.x+xMod, here.y, here.x+xMod+xOff, h)
+    //   c.bezier(here.x, here.y, here.x, here.y, midPt.x, midPt.y, anchor.x, anchor.y, anchor.x, anchor.y)
+    //   c.pop()
+    // }
     
 
     //cloud
+    c.fill(randomVal(180, 255))
     cShaper(here.x, here.y, randomVal(100, w*0.25))    
     
 
@@ -115,18 +138,29 @@ function draw() {
     // cShaper(here.x, here.y, randomVal(100, w*0.5))   
   }
 
-  //terrain
-  for(let i = 0; i < fullness; i++) {
-    c.fill(randomVal(128, 180))
-    here = createVector(randomVal(0, w), randomVal(h, h))
-    c.rectMode(CENTER)
-    cShaper(here.x, here.y, randomVal(100, h*0.4))
-    // cSpotLight(here.x, here.y, randomVal(100, w*0.6))
-
-    // there = ptFromAng(w/2, 0, randomVal(0, 180), randomVal(0, w*0.5))
-    // cShaper(there.x, there.y, randomVal(100, w*0.5))
+  // //ships
+  // for(let i = 0; i < 10; i++) {
     
-  }
+  //   here = ptFromAng(w/2, h/2, randomVal(0, 360), randomVal(w*0.25, w*0.75))
+  //   wid = randomVal(10, 50)
+  //   hei = wid*2
+  //   ship(here.x, here.y, wid, hei)
+  // }
+
+  
+
+  // terrain
+  // for(let i = 0; i < fullness; i++) {
+  //   c.fill(randomVal(128, 180))
+  //   here = createVector(randomVal(0, w), randomVal(h, h))
+  //   c.rectMode(CENTER)
+  //   cShaper(here.x, here.y, randomVal(100, h*0.333))
+  //   // cSpotLight(here.x, here.y, randomVal(100, w*0.6))
+
+  //   there = ptFromAng(w/2, 0, randomVal(0, 180), randomVal(0, w*0.5))
+  //   cShaper(there.x, there.y, randomVal(100, w*0.5))
+    
+  // }
 
   // for(let i = 0; i< 10; i++) {
   //   building()
@@ -138,7 +172,8 @@ function draw() {
   for(let i = 0; i < numLayers; i++) {
     p.push()
     p.translate(w/2, h/2)
-    p.rotate(randomVal(0, 360))
+    p.scale(1.25)
+    p.rotate(map(i, 0, numLayers, 0, 360))
     p.translate(-w/2, -h/2)
     sineWave()
     p.pop()

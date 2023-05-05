@@ -119,19 +119,11 @@ void main() {
   
   float rotMult = rotAmt;
   float rotMod = map(st.y, 0.0, 1.0, 0.0, 1.0);
-  if(st.y > 0.0+map(sampColVal.g, 0.0, 1.0, -offAmt, offAmt)) {
-    st.x -= center.x;
+  st.x -= center.x;
     st.y -= center.y;
     st.xy *= rotate(map(sampColVal.b, 0.0, 1.0, -0.0174533*rotMult, 0.0174533*rotMult)*dir);
     st.x += center.x;
     st.y += center.y;
-  } else {
-    st.x -= 0.5;
-    st.y -= 1.0;
-    // st.xy *= rotate(map(sampColVal.b, 0.0, 1.0, -0.0174533*rotMult, 0.0174533*rotMult));
-    st.x += 0.5;
-    st.y += 1.0;
-  }
   
   st.x += map(sampColVal.r, 0.0, 1.0, -offAmt, offAmt)*dir;
   st.y += map(sampColVal.g, 0.0, 1.0, -offAmt, offAmt)*dir;
@@ -191,7 +183,7 @@ void main() {
   
     if(color.rgb != bgc.rgb && texP.r > 0.5) {
       if(texC.r < 1.0) {
-        color = adjustContrast(color, 0.5);
+        color = adjustContrast(color, 0.1);
         color = adjustSaturation(color, 1.0);
       }
     

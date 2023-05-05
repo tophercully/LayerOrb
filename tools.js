@@ -227,6 +227,16 @@ function gradBG() {
   
 }
 
+function paintBG() {
+  c.noStroke()
+  for(let i = 0; i < 4000; i++) {
+    val = randomVal(0, 190)
+    col = chroma(val, val, val).alpha(0.02+randomVal(-0.001, 0.001)).hex()
+    c.fill(col)
+    c.circle(randomVal(0, w), randomVal(0, h), randomVal(200, 600))
+  }
+}
+
 function cShaper(x, y, r) {
   startAng = randomVal(0, 360)
   numSides = randomInt(3, 7)
@@ -277,6 +287,24 @@ function cSpotLight(x, y, r) {
   }
 }
 
+function cScale(x, y, r) {
+  dis = randomVal(0, r/2)
+  edge = ptFromAng(x, y, randomVal(0, 360), dis)
+  center = createVector(x, y)
+  dens = r
+  expo = 0.1
+
+  for(let i = 0; i < dens; i++) {
+
+    xC = map(i, 0, dens, center.x, edge.x)
+    yC = map(i, 0, dens, center.y, edge.y)
+    rad = map(i, 0, dens, r, 0)
+    val = map(pow(i, expo), pow(dens*0.1, expo), pow(dens, expo), 1, 0)*255
+    c.fill(val)
+    c.circle(xC, yC, rad)
+  }
+}
+
 function bezScrib() {
   bezPts[0] = createVector(randomVal(0, w), randomVal(0, h))
   numPts = fullness//randomInt(5, 20)
@@ -294,4 +322,77 @@ function building() {
   c.fill('white')
   c.rectMode(CENTER)
   c.rect(randomVal(0, w), h*0.75, randomVal(100, 200), randomVal(300, 600))
+}
+
+function ship(x, y, wid, hei) {
+  ang = randomVal(0, 360)//angBetween(x, y, w/2, h/2)+90
+  shipTrail(x, y, ang+90, randomVal(100, 500))
+
+  val = map(wid, 20, 100, 120, 255)
+  c.fill(val)
+  c.noStroke()
+  c.push()
+  c.translate(x, y)
+  
+  c.rotate(ang)
+  startAng = -90//angBetween(x, y, w/2, h/2)-90
+  numSides = 3//randomInt(3, 7)
+  if(numSides > 6) {
+    numSides = 360
+  }
+  c.beginShape()
+  for(let i = 0; i < 360; i+= 360/numSides) {
+    xC = cos(startAng+i)*(wid/2)
+    yC = sin(startAng+i)*(hei/2)
+    c.vertex(xC, yC)
+  }
+  c.endShape(CLOSE)
+  c.pop()
+
+  
+}
+
+function shipTrail(x, y, ang, spd) {
+  c.noFill()
+  c.stroke(150)
+  c.strokeWeight(1)
+  c.beginShape() 
+  c.curveVertex(x, y)
+  c.curveVertex(x, y)
+  
+  
+  for(let i = 0; i < 3; i++) {
+    here = ptFromAng(x, y, ang+randomVal(-20, 20), spd*i)
+
+    c.curveVertex(here.x, here.y)
+
+    
+  }
+  c.endShape()
+}
+
+function placard(maxDis) {
+  //top layer
+  dens = randomInt(3, 10)
+  c.beginShape()
+  c.vertex(0, 0)
+  c.vertex(w, 0)
+  for(let i = -1 ; i < dens+1; i++) {
+    xPos = map(i, 0, dens, w, 0)
+    yPos = map(randomVal(0, maxDis), 0, 1, 0, h)
+    c.vertex(xPos, yPos)
+  }
+  c.endShape(CLOSE)
+
+  //bottom layer
+  dens = randomInt(3, 10)
+  c.beginShape()
+  c.vertex(w, h)
+  c.vertex(0, h)
+  for(let i = -1 ; i < dens+1; i++) {
+    xPos = map(i, 0, dens, 0, w)
+    yPos = map(randomVal(0, maxDis), 0, 1, h, 0)
+    c.vertex(xPos, yPos)
+  }
+  c.endShape(CLOSE)
 }
