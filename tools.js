@@ -124,13 +124,27 @@ function gradLUT() {
   thisPal = [randColor(), 'black','white']
     for(let y = 0; y < h; y+=w/scl) {
       nY = map(y, 0, h, 0, 1)
-      colScale = chroma.scale(truePal.slice(0, numColors))//.classes(numColors)
+      colScale = chroma.scale(truePal.slice(0, numColors))//.classes(20)
       hueCol = colScale(nY).hex()
       col = hueCol
       g.stroke(col)
       g.strokeWeight(h/scl)
       g.line(0, y, w,y)
     }
+}
+
+function gridLut() {
+  scl = 30
+  for(let y = 0; y < 30; y+= h/30) {
+      nY = randomVal(0, 1)//map(y, 0, h, 0, 1)
+      colScale = chroma.scale(truePal.slice(0, numColors))//.classes(numColors)
+      hueCol = colScale(nY).hex()
+      col = hueCol
+      g.stroke(col)
+      g.strokeWeight(h/scl)
+      // g.line(0, y, w,y)
+      g.rect(w/2, y, w, h/30)
+  }
 }
 
 function sineWave() {
@@ -143,7 +157,7 @@ function sineWave() {
   
   
   p.drawingContext.setLineDash([randomVal(10, 500), randomVal(10, 500)])
-  rows = randomInt(5, 20)
+  rows = randomInt(5, 50)
   cellH = (h-(marg*2))/rows
   freq = randomVal(1, 10)
   amp = randomVal(0, 1)
@@ -165,6 +179,54 @@ function sineWave() {
   }
 }
 
+function cWave() {
+  capDecider = randomInt(0, 1)
+  if(capDecider == 0) {
+    c.strokeCap(SQUARE)
+  } else {
+    c.strokeCap(ROUND)
+  }
+  
+  
+  c.drawingContext.setLineDash([randomVal(10, 500), randomVal(10, 500)])
+  rows = randomInt(5, 50)
+  cellH = (h-(marg*2))/rows
+  freq = randomVal(2, 30)
+  amp = randomVal(0, 1)
+  wt = cellH/4
+  finalCol = chroma('black').alpha(randomVal(0.05, 0.3)+randomVal(-0.0001, 0.0001)).hex()
+  c.noFill()
+  c.strokeWeight(wt)
+  c.stroke(finalCol)
+  for(let y = 0; y < rows+1; y++) {
+    c.drawingContext.lineDashOffset=randomVal(0, 500)
+    c.beginShape()
+    for(let x = 0; x < w; x++) {
+      fullRot = map(x, 0, w, 0, 360)
+      yOff = map(sin(fullRot*freq), -1, 1, -wt*amp, wt*amp)
+      // yOff = map(noise(x*0.001), 0, 1, -wt*amp, wt*amp)
+      c.vertex(x, (y*cellH+(cellH/2))+yOff)
+    } 
+    c.endShape()
+  }
+}
+
+function gradBG() {
+  
+    scl = 200
+    thisPal = shuff(['gray', 'black'])
+      for(let y = -200; y < h+200; y+=h/scl) {
+        nY = map(y, 0, h, 0, 1)
+        colScale = chroma.scale(thisPal)//.classes(20)
+        hueCol = colScale(nY).hex()
+        col = hueCol
+        c.stroke(col)
+        c.strokeWeight(h/scl)
+        c.line(0, y, w,y)
+      }
+  
+}
+
 function cShaper(x, y, r) {
   startAng = randomVal(0, 360)
   numSides = randomInt(3, 7)
@@ -175,6 +237,23 @@ function cShaper(x, y, r) {
   for(let i = 0; i < 360; i+= 360/numSides) {
     xC = cos(startAng+i)*(r/2)
     yC = sin(startAng+i)*(r/2)
+    c.vertex(x+xC, y+yC)
+  }
+  c.endShape(CLOSE)
+}
+
+function cFlower(x, y, r) {
+  startAng = randomVal(0, 360)
+  numSides = randomInt(3, 7)
+  if(numSides > 6) {
+    numSides = 360
+  }
+  numPetals = 5
+  c.beginShape()
+  for(let i = 0; i < 360; i++) {
+    sineMod = map(abs(sin(i*numPetals)), 0, 1, 0.5, 1)
+    xC = cos(startAng+i)*((r/2)*sineMod)
+    yC = sin(startAng+i)*((r/2)*sineMod)
     c.vertex(x+xC, y+yC)
   }
   c.endShape(CLOSE)
@@ -196,4 +275,23 @@ function cSpotLight(x, y, r) {
     c.fill(chroma('white').alpha(val).hex())
     c.circle(xC, yC, rad)
   }
+}
+
+function bezScrib() {
+  bezPts[0] = createVector(randomVal(0, w), randomVal(0, h))
+  numPts = fullness//randomInt(5, 20)
+  c.noFill()
+  c.stroke('white')
+  c.strokeWeight(10)
+  c.beginShape()
+  for(let i = 0; i < fullness; i++) {
+    c.curveVertex(bezPts[i].x, bezPts[i].y)
+  }
+  c.endShape()
+}
+
+function building() {
+  c.fill('white')
+  c.rectMode(CENTER)
+  c.rect(randomVal(0, w), h*0.75, randomVal(100, 200), randomVal(300, 600))
 }

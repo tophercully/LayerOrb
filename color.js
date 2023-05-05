@@ -75,8 +75,8 @@ const soft = [
   "#4D908E",
   "#577590",
   "#277DA1",
-  frameCol,
-  "white",
+  // frameCol,
+  // "white",
 ];
 
 const jazzy = [
@@ -235,7 +235,7 @@ comboF = ['#de3be1', "#e9a32b"]
 achro = ['black', 'white']
 
 
-const pals = [source, shepard, toyBlocks, mcWoot, soft, jazzy, ceramic, oilPastel, mcNay, oKeefe, flowerMarket, oilPaint];
+const pals = [shepard, source, soft, mcWoot, comboE, comboA, comboF];
 
 const palNames = [
   "Source",
@@ -254,7 +254,7 @@ const palNames = [
 
 //Palette parameters
 palNum = randomInt(0, pals.length-1);
-pal = shepard//pals[palNum];
+pal = pals[palNum];
 palName = palNames[palNum];
 
 console.log(palName)
@@ -283,7 +283,7 @@ for (let i = 0; i < pal.length-1; i++) {
 }
 
 //Combine palettes and shuffle that full palette
-fullPal = [].concat(pal, lighterPal, darkerPal);
+fullPal = [].concat(pal, darkerPal);
 truePal = shuff(fullPal);
 
 //Pass our palette back to the CSS spinner

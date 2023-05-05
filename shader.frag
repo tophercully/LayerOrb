@@ -85,8 +85,8 @@ void main() {
   stPaper.y = 1.0 - st.y;
 
   //form noise
-  // st.xy += map(random(st.xy), 0.0, 1.0, -0.0005, 0.0005);
-  float warp = map(noise(seed+st.xy*5.0), 0.0, 1.0, -0.005, 0.005);
+  st.xy += map(random(st.xy), 0.0, 1.0, -0.0005, 0.0005);
+  float warp = map(noise(seed+st.xy*5.0), 0.0, 1.0, -0.01, 0.01);
   //st.xy += warp;
 
   if(lastPass == true) {
@@ -103,12 +103,23 @@ void main() {
 
   //offset matrix
   vec4 sampTexP = texture2D(p, st);
-  vec2 sampLum = vec2(0.5, sampTexP.r);
+  vec3 contrastSampP = adjustContrast(sampTexP.rgb, 0.2);
+  vec2 sampLum = vec2(0.0, 0.0);
+  
+  sampLum = vec2(0.5, contrastSampP.r);
+  
+  
+  
   vec4 sampColVal = texture2D(g, sampLum);
-  float offAmt = offsetAmt*intens;//0.008
+  
+  float offAmt = offsetAmt;//0.008
+  if(st.y > 0.5) {
+    // offAmt *= 0.5;
+  }
+  
   float rotMult = rotAmt;
   float rotMod = map(st.y, 0.0, 1.0, 0.0, 1.0);
-  if(st.y > 0.0+map(sampColVal.g, 0.0, 1.0, -offAmt, offAmt)*dir) {
+  if(st.y > 0.0+map(sampColVal.g, 0.0, 1.0, -offAmt, offAmt)) {
     st.x -= center.x;
     st.y -= center.y;
     st.xy *= rotate(map(sampColVal.b, 0.0, 1.0, -0.0174533*rotMult, 0.0174533*rotMult)*dir);
@@ -139,7 +150,8 @@ void main() {
   vec4 texC = texture2D(c, st);
   vec4 texG = texture2D(g, st);
   vec4 texP = texture2D(p, st);
-  vec2 lum = vec2(0.5, texP.r);
+  vec3 contrastP = adjustContrast(texP.rgb, 0.1);
+  vec2 lum = vec2(0.5, contrastP.r);
   // vec3 gradCol = vec3(sampTexG.r, sampTexG.g, sampTexG.b);
 
   vec4 colVal = texture2D(g, lum);
@@ -148,11 +160,13 @@ void main() {
 
   vec3 color = vec3(0.0);
   vec3 final = vec3(0.0);
-  color = colVal.rgb;
+  
 
-  // if(firstPass == false) {
-  //   color = texP.rgb;
-  // }
+  if(lastPass == false) {
+    color = texP.rgb;
+  } else {
+    color = colVal.rgb;
+  }
 
   //debug p layer
   // color = vec3(texP.r, texP.g, texP.b);
@@ -164,15 +178,23 @@ void main() {
     color = vec3(bgc.r, bgc.g, bgc.b);
   }
 
-  color = mix(bgc.rgb, color.rgb, texC.r);
+  
   // if(texC.r == 0.0) {
   //   color = bgc.rgb;
   // }
+  if(lastPass == false && texC.r < 0.5) {
+    color = mix(bgc.rgb, color.rgb, texC.r);
+  }
 
   if(lastPass == true) {
-    if(color.rgb != bgc.rgb) {
-    color = adjustContrast(color, 0.2);
-    color = adjustSaturation(color, 0.3);
+    color = mix(bgc.rgb, color.rgb, texC.r);
+  
+    if(color.rgb != bgc.rgb && texP.r > 0.5) {
+      if(texC.r < 1.0) {
+        color = adjustContrast(color, 0.5);
+        color = adjustSaturation(color, 1.0);
+      }
+    
       
       if(paperVal > 0.7 && paperVal < 1.0) {
         
@@ -181,6 +203,9 @@ void main() {
         
         // color = adjustExposure(color, noise(stB.xy*10.0)*-0.5);
       }
+    } else if(texP.r < 0.5){
+      // color = adjustContrast(color, -1.0);
+      // color = mix(bgc, color, 0.1);
     }
     color += noiseGray;
 
@@ -191,6 +216,7 @@ void main() {
   
   // color.rgb = texG.rgb;
   // color.rgb = texP.rgb;
+  // color.rgb = texC.rgb;
 
 
   gl_FragColor = vec4(color, 1.0);
