@@ -121,10 +121,11 @@ function plusOrMin(x) {
 
 function gradLUT() {
   scl = 200
-  thisPal = [randColor(), 'black','white']
+  thisPal = ['white', truePal[0], truePal[1],'black']
     for(let y = 0; y < h; y+=w/scl) {
       nY = map(y, 0, h, 0, 1)
-      colScale = chroma.scale(truePal.slice(0, numColors))//.classes(20)
+      // colScale = chroma.scale(truePal.slice(0, numColors))//.classes(20)
+      colScale = chroma.scale(thisPal).padding([-0.6, 0.0])
       hueCol = colScale(nY).hex()
       col = hueCol
       g.stroke(col)
@@ -157,7 +158,7 @@ function sineWave() {
   
   
   p.drawingContext.setLineDash([randomVal(10, 500), randomVal(10, 500)])
-  rows = randomInt(5, 50)
+  rows = randomInt(5, 20)
   cellH = (h-(marg*2))/rows
   freq = randomVal(1, 10)
   amp = randomVal(0, 1)
@@ -229,9 +230,9 @@ function gradBG() {
 
 function paintBG() {
   c.noStroke()
-  for(let i = 0; i < 4000; i++) {
+  for(let i = 0; i < 3000; i++) {
     val = randomVal(0, 190)
-    col = chroma(val, val, val).alpha(0.02+randomVal(-0.001, 0.001)).hex()
+    col = chroma(val, val, val).alpha(0.01+randomVal(-0.001, 0.001)).hex()
     c.fill(col)
     c.circle(randomVal(0, w), randomVal(0, h), randomVal(200, 600))
   }
@@ -328,7 +329,7 @@ function ship(x, y, wid, hei) {
   ang = randomVal(0, 360)//angBetween(x, y, w/2, h/2)+90
   shipTrail(x, y, ang+90, randomVal(100, 500))
 
-  val = map(wid, 20, 100, 120, 255)
+  val = 255//map(wid, 20, 100, 200, 255)
   c.fill(val)
   c.noStroke()
   c.push()
@@ -354,15 +355,16 @@ function ship(x, y, wid, hei) {
 
 function shipTrail(x, y, ang, spd) {
   c.noFill()
-  c.stroke(150)
+  c.stroke(100)
   c.strokeWeight(1)
   c.beginShape() 
-  c.curveVertex(x, y)
-  c.curveVertex(x, y)
+  // c.curveVertex(x, y)
+  here = ptFromAng(x, y, ang+180, spd)
+  c.curveVertex(here.x, here.y)
   
   
-  for(let i = 0; i < 3; i++) {
-    here = ptFromAng(x, y, ang+randomVal(-20, 20), spd*i)
+  for(let i = 0; i < 5; i++) {
+    here = ptFromAng(x, y, ang+randomVal(-40, 40), spd*i)
 
     c.curveVertex(here.x, here.y)
 

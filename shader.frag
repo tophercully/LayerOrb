@@ -20,6 +20,7 @@ uniform float offsetAmt;
 uniform float rotAmt;
 uniform bool firstPass;
 uniform bool lastPass;
+uniform float offsetVals;
 
 float map(float value, float inMin, float inMax, float outMin, float outMax) {
   return outMin + (outMax - outMin) * (value - inMin) / (inMax - inMin);
@@ -117,16 +118,42 @@ void main() {
     // offAmt *= 0.5;
   }
   
+  float valA = 0.0;
+  float valB = 0.0;
+  float valC = 0.0;
+  if(offsetVals == 1.0) {
+    valA = sampColVal.r;
+    valB = sampColVal.g;
+    valC = sampColVal.b;
+  } else if(offsetVals == 2.0) {
+    valA = sampColVal.g;
+    valB = sampColVal.b;
+    valC = sampColVal.r;
+  } else if(offsetVals == 3.0) {
+    valA = sampColVal.b;
+    valB = sampColVal.r;
+    valC = sampColVal.g;
+  } else if(offsetVals == 4.0) {
+    valA = sampColVal.r;
+    valB = sampColVal.b;
+    valC = sampColVal.g;
+  } else if(offsetVals == 5.0) {
+    valA = sampColVal.r;
+    valB = sampColVal.g;
+    valC = sampColVal.b;
+  }
+  
+
   float rotMult = rotAmt;
   float rotMod = map(st.y, 0.0, 1.0, 0.0, 1.0);
   st.x -= center.x;
     st.y -= center.y;
-    st.xy *= rotate(map(sampColVal.b, 0.0, 1.0, -0.0174533*rotMult, 0.0174533*rotMult)*dir);
+    st.xy *= rotate(map(valA, 0.0, 1.0, -0.0174533*rotMult, 0.0174533*rotMult)*dir);
     st.x += center.x;
     st.y += center.y;
   
-  st.x += map(sampColVal.r, 0.0, 1.0, -offAmt, offAmt)*dir;
-  st.y += map(sampColVal.g, 0.0, 1.0, -offAmt, offAmt)*dir;
+  st.x += map(valB, 0.0, 1.0, -offAmt, offAmt)*dir;
+  st.y += map(valC, 0.0, 1.0, -offAmt, offAmt)*dir;
 
   //paper texture params
   float noiseRot = 0.0;//noise(seed+(stB.xy*10.0))*(0.0174533*10.0);

@@ -31,7 +31,7 @@ offAmt = 0.04//0.04//randomVal(0.005, 0.05)//totalDis/numPasses
 fullness = 100//randomInt(10, 30)
 rot = 0//randomVal(-10, 10)//randomVal(0, 360)
 
-cloudSz = w*0.3//randomVal(w*0.15, w*0.333)
+cloudSz = w*0.25//randomVal(w*0.15, w*0.333)
 numLegs = 4
 
 //populate leg array
@@ -130,7 +130,7 @@ function draw() {
     
 
     //cloud
-    c.fill(randomVal(180, 255))
+    c.fill(randomVal(180, 255))//180, 255
     cShaper(here.x, here.y, randomVal(100, w*0.25))    
     
 
@@ -138,14 +138,14 @@ function draw() {
     // cShaper(here.x, here.y, randomVal(100, w*0.5))   
   }
 
-  // //ships
-  // for(let i = 0; i < 10; i++) {
+  //ships
+  for(let i = 0; i < 5; i++) {
     
-  //   here = ptFromAng(w/2, h/2, randomVal(0, 360), randomVal(w*0.25, w*0.75))
-  //   wid = randomVal(10, 50)
-  //   hei = wid*2
-  //   ship(here.x, here.y, wid, hei)
-  // }
+    here = ptFromAng(w/2, h/2, randomVal(0, 360), randomVal(w*0.25, w*0.75))
+    wid = randomVal(10, 50)
+    hei = wid*2
+    ship(here.x, here.y, wid, hei)
+  }
 
   
 
@@ -194,6 +194,7 @@ function draw() {
    shade.setUniform("c", c);
    shade.setUniform("offsetAmt", offAmt)
    shade.setUniform("rotAmt", rotAmt)
+   shade.setUniform("offsetVals", randomInt(1, 5))
    shade.setUniform("center",[center.x/w, center.y/h]);
    shade.setUniform("seed", randomVal(0, 10));
    shade.setUniform("marg", map(marg, 0, w, 0, 1));
