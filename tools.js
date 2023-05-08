@@ -121,11 +121,11 @@ function plusOrMin(x) {
 
 function gradLUT() {
   scl = 200
-  thisPal = ['white', truePal[0], truePal[1],'black']
+  thisPal = ['black', truePal[0], truePal[1],'black']
     for(let y = 0; y < h; y+=w/scl) {
       nY = map(y, 0, h, 0, 1)
       // colScale = chroma.scale(truePal.slice(0, numColors))//.classes(20)
-      colScale = chroma.scale(thisPal).padding([-0.6, 0.0])
+      colScale = chroma.scale(thisPal).padding([-0.8, 0.0])
       hueCol = colScale(nY).hex()
       col = hueCol
       g.stroke(col)
@@ -231,7 +231,7 @@ function gradBG() {
 function paintBG() {
   c.noStroke()
   for(let i = 0; i < 3000; i++) {
-    val = randomVal(0, 190)
+    val = randomVal(0, 255*0.3)
     col = chroma(val, val, val).alpha(0.01+randomVal(-0.001, 0.001)).hex()
     c.fill(col)
     c.circle(randomVal(0, w), randomVal(0, h), randomVal(200, 600))
@@ -326,7 +326,7 @@ function building() {
 }
 
 function ship(x, y, wid, hei) {
-  ang = randomVal(0, 360)//angBetween(x, y, w/2, h/2)+90
+  ang = randomVal(-90, 90)//angBetween(x, y, w/2, h/2)+90
   shipTrail(x, y, ang+90, randomVal(100, 500))
 
   val = 255//map(wid, 20, 100, 200, 255)
@@ -364,7 +364,7 @@ function shipTrail(x, y, ang, spd) {
   
   
   for(let i = 0; i < 5; i++) {
-    here = ptFromAng(x, y, ang+randomVal(-40, 40), spd*i)
+    here = ptFromAng(x, y, ang+randomVal(-30, 30), spd*i)
 
     c.curveVertex(here.x, here.y)
 
@@ -397,4 +397,36 @@ function placard(maxDis) {
     c.vertex(xPos, yPos)
   }
   c.endShape(CLOSE)
+}
+
+function wave(min, max) {
+  
+  numWaves = 1//randomVal(1, 2)
+  yLimMod = randomVal(0, 360)
+  yMax = map(max, 0, 255, h, h*0.333)
+  waveExpo = 2
+  waveDis = plusOrMin(randomVal(100, 400))
+  for(let i = 0; i < fullness; i++) {
+    c.fill(randomVal(min, max))
+    xPos = randomVal(-300, w+300)
+    sineX = map(xPos, 0, w, 0, 360)
+    
+    yLimit = map(sin(((sineX*numWaves)+yLimMod)), -1, 1, 0, yMax)
+    xMod = map(pow(yLimit, 0.5), 0, pow(yMax, 0.5), 0, -1000)
+
+    yPos = randomVal(yLimit, 0)
+    sineY = map(pow(yPos, waveExpo), 0, pow(yMax, waveExpo), 0, 360)-30
+    yOff = map(sin(sineY), -1, 1, 0, waveDis)
+    yDrop = map(sin(sineY), -1, 1, 0, yMax*0.3)
+    here = createVector(xPos+yOff, h-yPos)
+
+    c.rectMode(CENTER)
+    cShaper(here.x, here.y, randomVal(100, w*0.1))
+    // cSpotLight(here.x, here.y, randomVal(100, w*0.6))
+
+    // c.fill(randomVal(100, 150))
+    // there = ptFromAng(w/2, 0, randomVal(0, 180), randomVal(0, w*0.5))
+    // cShaper(there.x, there.y, randomVal(100, w*0.5))
+    
+  }
 }

@@ -1,6 +1,6 @@
 w= 1600
 h = 2000
-marg = 20
+marg = 0
 
 let shade;
 function preload() {
@@ -24,12 +24,12 @@ legNums = []
 //parameters
 numColors = 5//randomInt(3, 5)
 numLayers = 30//randomInt(3, 10)
-numPasses = 3//randomInt(3, 8)//randomInt(2, 6)
+numPasses = 4//3//randomInt(3, 8)//randomInt(2, 6)
 totalDis = 0.1
-rotAmt = 1.4//randomVal(1, 5)
-offAmt = 0.04//0.04//randomVal(0.005, 0.05)//totalDis/numPasses
-fullness = 100//randomInt(10, 30)
-rot = 0//randomVal(-10, 10)//randomVal(0, 360)
+rotAmt = 360//1.4//randomVal(1, 5)
+offAmt = 0.02//0.04//randomVal(0.005, 0.05)//totalDis/numPasses
+fullness = 1000//randomInt(10, 30)
+rot = 180*randomInt(0, 1)//randomVal(0, 360)
 
 cloudSz = w*0.25//randomVal(w*0.15, w*0.333)
 numLegs = 4
@@ -86,7 +86,7 @@ function draw() {
   //Build the gradient LUT
   gradLUT()
   //gradient background
-  gradBG()
+  // gradBG()
   paintBG()
 
   //setting safe to draw area/cutout
@@ -105,62 +105,55 @@ function draw() {
   //   placard(dis)
   // }
   
-  //subject
-  centerX = w*0.5//randomVal(w*0.5, w*0.75)
-  xOff = 0//randomVal(-300, 300)
-  for(let i = 0; i < fullness; i++) {
+  // //subject
+  // centerX = w*0.5//randomVal(w*0.5, w*0.75)
+  // xOff = 0//randomVal(-300, 300)
+  // for(let i = 0; i < fullness; i++) {
     
     
-    here = ptFromAng(centerX, h*0.5, randomVal(0, 360), randomVal(0, cloudSz))
-    anchor = createVector(randomVal(centerX+(cloudSz*1.75), centerX-(cloudSz*1.75)), h)
-    midAmt = randomVal(0.25, 0.85)
-    midPt = createVector(randomVal(centerX+(cloudSz*1.5), centerX-(cloudSz*1.5)), map(midAmt, 0, 1, here.y, anchor.y))
+  //   here = ptFromAng(centerX, h*0.5, randomVal(0, 360), randomVal(0, cloudSz))
+  //   anchor = createVector(randomVal(centerX+(cloudSz*1.75), centerX-(cloudSz*1.75)), h)
+  //   midAmt = randomVal(0.25, 0.85)
+  //   midPt = createVector(randomVal(centerX+(cloudSz*1.5), centerX-(cloudSz*1.5)), map(midAmt, 0, 1, here.y, anchor.y))
 
-    //raindrops
-    // for(let i = 0; i < 5; i++) {
-    //   // c.drawingContext.setLineDash([randomVal(100, 300), randomVal(100, 300)])
-    //   xMod = randomVal(-10, 10)
-    //   c.push()
-    //   c.stroke(randomVal(150, 255))
-    //   c.strokeWeight(randomVal(0.25, 1))
-    //   // c.line(here.x+xMod, here.y, here.x+xMod+xOff, h)
-    //   c.bezier(here.x, here.y, here.x, here.y, midPt.x, midPt.y, anchor.x, anchor.y, anchor.x, anchor.y)
-    //   c.pop()
-    // }
-    
-
-    //cloud
-    c.fill(randomVal(180, 255))//180, 255
-    cShaper(here.x, here.y, randomVal(100, w*0.25))    
+  //   //raindrops
+  //   // for(let i = 0; i < 5; i++) {
+  //   //   // c.drawingContext.setLineDash([randomVal(100, 300), randomVal(100, 300)])
+  //   //   xMod = randomVal(-10, 10)
+  //   //   c.push()
+  //   //   c.stroke(randomVal(150, 255))
+  //   //   c.strokeWeight(randomVal(0.25, 1))
+  //   //   // c.line(here.x+xMod, here.y, here.x+xMod+xOff, h)
+  //   //   c.bezier(here.x, here.y, here.x, here.y, midPt.x, midPt.y, anchor.x, anchor.y, anchor.x, anchor.y)
+  //   //   c.pop()
+  //   // }
     
 
-    // there = ptFromAng(w/2, h/2, randomVal(180, 360), randomVal(0, w*0.1))
-    // cShaper(here.x, here.y, randomVal(100, w*0.5))   
-  }
+  //   //cloud
+  //   c.fill(randomVal(180, 255))//180, 255
+  //   cShaper(here.x, here.y, randomVal(100, w*0.25))    
+    
+
+  //   // there = ptFromAng(w/2, h/2, randomVal(180, 360), randomVal(0, w*0.1))
+  //   // cShaper(here.x, here.y, randomVal(100, w*0.5))   
+  // }
+
+  
+  //bg waves
+  wave(60, 100)
+  wave(120, 150)
 
   //ships
   for(let i = 0; i < 5; i++) {
-    
     here = ptFromAng(w/2, h/2, randomVal(0, 360), randomVal(w*0.25, w*0.75))
     wid = randomVal(10, 50)
     hei = wid*2
     ship(here.x, here.y, wid, hei)
   }
 
-  
-
-  // terrain
-  // for(let i = 0; i < fullness; i++) {
-  //   c.fill(randomVal(128, 180))
-  //   here = createVector(randomVal(0, w), randomVal(h, h))
-  //   c.rectMode(CENTER)
-  //   cShaper(here.x, here.y, randomVal(100, h*0.333))
-  //   // cSpotLight(here.x, here.y, randomVal(100, w*0.6))
-
-  //   there = ptFromAng(w/2, 0, randomVal(0, 180), randomVal(0, w*0.5))
-  //   cShaper(there.x, there.y, randomVal(100, w*0.5))
-    
-  // }
+  //final wave
+  wave(180, 255)
+   
 
   // for(let i = 0; i< 10; i++) {
   //   building()
@@ -199,6 +192,7 @@ function draw() {
    shade.setUniform("seed", randomVal(0, 10));
    shade.setUniform("marg", map(marg, 0, w, 0, 1));
    shade.setUniform("lastPass", lastPass)
+   shade.setUniform("angThisPass", randomVal(0, 1))
    shade.setUniform("bgc", [
      bgc.levels[0] / 255,
      bgc.levels[1] / 255,

@@ -238,15 +238,13 @@ achro = ['black', 'white']
 const pals = [shepard, source, soft, mcWoot, comboE, comboA, comboF];
 
 const palNames = [
-  "Source",
   "Commander Shepard",
-  "Toy Blocks",
-  "McWoot",
+  "Source",
   "Soft",
-  "Jazzy",
-  "Ceramic",
-  "Oil Pastel",
-  "McNay",
+  "McWoot",
+  "comboE",
+  "comboA",
+  "comboF",
   "O'Keefe",
   "Flower Market",
   "Oil Paint"

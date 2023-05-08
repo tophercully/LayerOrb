@@ -21,6 +21,7 @@ uniform float rotAmt;
 uniform bool firstPass;
 uniform bool lastPass;
 uniform float offsetVals;
+uniform float angThisPass;
 
 float map(float value, float inMin, float inMax, float outMin, float outMax) {
   return outMin + (outMax - outMin) * (value - inMin) / (inMax - inMin);
@@ -83,7 +84,7 @@ void main() {
 
   //flip the upside down image
   st.y = 1.0 - st.y;
-  stPaper.y = 1.0 - st.y;
+  stB.y = 1.0 - st.y;
 
   //form noise
   st.xy += map(random(st.xy), 0.0, 1.0, -0.0005, 0.0005);
@@ -92,8 +93,8 @@ void main() {
 
   if(lastPass == true) {
     //Shrink to fit inside margins
-    float margX = marg;
-    float margY = margX*0.8;
+    float margY = marg;
+    float margX = marg;//margY*0.8;
     st.x = map(st.x, 0.0, 1.0, -margX, 1.0+margX);
     st.y = map(st.y, 0.0, 1.0, -marg, 1.0+marg);
     stB.x = map(stB.x, 0.0, 1.0, -margX, 1.0+margX);
@@ -104,17 +105,17 @@ void main() {
 
   //offset matrix
   vec4 sampTexP = texture2D(p, st);
-  vec3 contrastSampP = adjustContrast(sampTexP.rgb, 0.2);
+  vec3 contrastSampP = adjustContrast(sampTexP.rgb, 0.0);
   vec2 sampLum = vec2(0.0, 0.0);
   
   sampLum = vec2(0.5, contrastSampP.r);
   
   
   
-  vec4 sampColVal = texture2D(g, sampLum);
+  vec3 sampColVal = sampTexP.rgb;//texture2D(g, sampLum);
   
   float offAmt = offsetAmt;//0.008
-  if(st.y > 0.5) {
+  if(st.y > 0.6) {
     // offAmt *= 0.5;
   }
   
@@ -146,26 +147,23 @@ void main() {
 
   float rotMult = rotAmt;
   float rotMod = map(st.y, 0.0, 1.0, 0.0, 1.0);
-  st.x -= center.x;
-    st.y -= center.y;
-    st.xy *= rotate(map(valA, 0.0, 1.0, -0.0174533*rotMult, 0.0174533*rotMult)*dir);
-    st.x += center.x;
-    st.y += center.y;
-  
-  st.x += map(valB, 0.0, 1.0, -offAmt, offAmt)*dir;
-  st.y += map(valC, 0.0, 1.0, -offAmt, offAmt)*dir;
 
-  //paper texture params
-  float noiseRot = 0.0;//noise(seed+(stB.xy*10.0))*(0.0174533*10.0);
-  stPaper.xy *= rotate(sampTexP.r*(0.0174533*360.0*3.0)+noiseRot+seed);
-  //scale x axis
-  stPaper.x *= 40.0;
-  //squeeze y axis
-  stPaper.y *= 1000.0;
-  // float noiseMod = noise(stPaper.x, stPaper.x);
-  float paperVal = noise((seed+(stB.y*100.0))+stPaper.xy);
+  //map(valB, 0.0, 1.0, -offAmt, offAmt)*dir;
+  //rotate with one color channel
+  // st.x -= st.x;//center.x;
+  // st.y -= st.y;//center.y;
+  // st.xy *= rotate(map(valA, 0.0, 1.0, -0.0174533*rotMult, 0.0174533*rotMult)*dir);
+  // st.x += offAmt;
   
+  st.x += cos(3.14159+map(valA, 0.0, 1.0, -0.0174533*rotMult, 0.0174533*rotMult))*offAmt;
+  st.y += sin(3.14159+map(valA, 0.0, 1.0, -0.0174533*rotMult, 0.0174533*rotMult))*offAmt;
+  // st.x += st.x;//center.x;
+  // st.y += st.y;//center.y;
+  //push consistently one distance at x color channel direction
+  
+  // st.y += map(valC, 0.0, 1.0, -offAmt, offAmt)*dir;
 
+  //pull in our main textures
   vec4 texC = texture2D(c, st);
   vec4 texG = texture2D(g, st);
   vec4 texP = texture2D(p, st);
@@ -193,35 +191,30 @@ void main() {
   //Draw margin
   // float margX = marg;
   // float margY = margX*0.8;
-  if(stB.x < 0.0 || stB.x > 1.0 || stB.y < 0.0 || stB.y > 1.0) {
-    color = vec3(bgc.r, bgc.g, bgc.b);
+  // float offCover = margin
+  if(stB.x <= 0.0 || stB.x >= 1.0 || stB.y <= 0.0 || stB.y >= 1.0) {
+    color = bgc;//vec3(bgc.r, bgc.g, bgc.b);
   }
 
   
   // if(texC.r == 0.0) {
   //   color = bgc.rgb;
   // }
-  if(lastPass == false && texC.r < 0.5) {
-    color = mix(bgc.rgb, color.rgb, texC.r);
+  float mixAmt = map(texC.r, 0.0, 0.3, 0.0, 1.0);
+
+  if(lastPass == false && texC.r < 0.3) {
+    color = mix(bgc.rgb, color.rgb, mixAmt);
   }
 
   if(lastPass == true) {
     color = mix(bgc.rgb, color.rgb, texC.r);
   
-    if(color.rgb != bgc.rgb && texP.r > 0.5) {
+    if(texP.r > 0.5) {
       if(texC.r < 1.0) {
-        color = adjustContrast(color, 0.1);
+        color = adjustContrast(color, 0.5);
         color = adjustSaturation(color, 1.0);
       }
     
-      
-      if(paperVal > 0.7 && paperVal < 1.0) {
-        
-        // color = adjustExposure(color, noise(stB.xy*10.0)*0.1);
-      } else if(paperVal < 0.4 && paperVal > 0.2) {
-        
-        // color = adjustExposure(color, noise(stB.xy*10.0)*-0.5);
-      }
     } else if(texP.r < 0.5){
       // color = adjustContrast(color, -1.0);
       // color = mix(bgc, color, 0.1);
