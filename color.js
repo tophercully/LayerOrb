@@ -41,14 +41,14 @@ if (calcBgLum > 0.5) {
 const source = [
   "#A6C8CA",
   "#097857",
-  "#F1E8D9",
+  //"#F1E8D9",
   "#E3CE61",
   "#E35A7E",
-  frameCol,
+  //frameCol,
   "#EE692A",
-  "#BFCCD4",
+  //"#BFCCD4",
   "#217F96",
-  "#EBD5D7",
+  //"#EBD5D7",
 ];
 
 const shepard = [
@@ -161,7 +161,7 @@ const oilPastel = [
 ]
 
  const seaFoam = [
- "#22577a", "#38a3a5", "#57cc99", "#80ed99", "#c7f9cc", "#f2f9e8", "#f9f9f9"
+ "#22577a", "#38a3a5", "#57cc99", "#80ed99", //"#c7f9cc", "#f2f9e8", "#f9f9f9"
 ] //credit Wouter Missler
 
 const popper = ["#F5D365", "#E66C64", "#92BCC8", "#4F7C9A", frameCol];

@@ -117,11 +117,19 @@ function plusOrMin(x) {
 
   return x*mod
 }
+
+function average(array) {
+  sum = 0;
+  array.forEach((element) => {
+    sum += element;
+  });
+  return sum / array.length;
+}
 ////////////////////////////////////////
 
 function gradLUT() {
   scl = 200
-  thisPal = ['black', truePal[0], truePal[1],'black']
+  thisPal = [frameCol, truePal[0], truePal[1], frameCol]
     for(let y = 0; y < h; y+=w/scl) {
       nY = map(y, 0, h, 0, 1)
       // colScale = chroma.scale(truePal.slice(0, numColors))//.classes(20)
@@ -215,7 +223,7 @@ function cWave() {
 function gradBG() {
   
     scl = 200
-    thisPal = shuff(['gray', 'black'])
+    thisPal = ['black', 'gray']
       for(let y = -200; y < h+200; y+=h/scl) {
         nY = map(y, 0, h, 0, 1)
         colScale = chroma.scale(thisPal)//.classes(20)
@@ -231,7 +239,7 @@ function gradBG() {
 function paintBG() {
   c.noStroke()
   for(let i = 0; i < 3000; i++) {
-    val = randomVal(0, 255*0.3)
+    val = randomVal(0, 255*0.5)
     col = chroma(val, val, val).alpha(0.01+randomVal(-0.001, 0.001)).hex()
     c.fill(col)
     c.circle(randomVal(0, w), randomVal(0, h), randomVal(200, 600))
@@ -325,15 +333,17 @@ function building() {
   c.rect(randomVal(0, w), h*0.75, randomVal(100, 200), randomVal(300, 600))
 }
 
-function ship(x, y, wid, hei) {
+function ship(xPos, yPos, wid, hei, col) {
   ang = randomVal(-90, 90)//angBetween(x, y, w/2, h/2)+90
-  shipTrail(x, y, ang+90, randomVal(100, 500))
+  shipTrail(xPos, yPos, ang+90, randomVal(400, 800))
 
-  val = 255//map(wid, 20, 100, 200, 255)
+  val = col//map(wid, 20, 100, 200, 255)
   c.fill(val)
-  c.noStroke()
+  
   c.push()
-  c.translate(x, y)
+  c.stroke(0)
+  c.strokeWeight(3)
+  c.translate(xPos, yPos)
   
   c.rotate(ang)
   startAng = -90//angBetween(x, y, w/2, h/2)-90
@@ -355,8 +365,8 @@ function ship(x, y, wid, hei) {
 
 function shipTrail(x, y, ang, spd) {
   c.noFill()
-  c.stroke(100)
-  c.strokeWeight(1)
+  c.stroke(20)
+  c.strokeWeight(randomVal(3, 10))
   c.beginShape() 
   // c.curveVertex(x, y)
   here = ptFromAng(x, y, ang+180, spd)
@@ -364,7 +374,7 @@ function shipTrail(x, y, ang, spd) {
   
   
   for(let i = 0; i < 5; i++) {
-    here = ptFromAng(x, y, ang+randomVal(-30, 30), spd*i)
+    here = ptFromAng(x, y, ang+randomVal(-20, 20), spd*i)
 
     c.curveVertex(here.x, here.y)
 
@@ -427,6 +437,44 @@ function wave(min, max) {
     // c.fill(randomVal(100, 150))
     // there = ptFromAng(w/2, 0, randomVal(0, 180), randomVal(0, w*0.5))
     // cShaper(there.x, there.y, randomVal(100, w*0.5))
+    
+  }
+}
+
+function shipPlacer() {
+  c.loadPixels()
+  pad = 200
+  for(let i = 0; i < numShips; i++) {
+    ptFound = false
+    tries = 0
+    maxLum = 80
+    while(ptFound == false) {
+      tries++
+      
+      here = createVector(randomInt(pad, w-pad), randomInt(pad, h*0.666))
+      hereB = ptFromAng(here.x, here.y, randomVal(0, 360), 50)
+
+      colChecker = c.get(here.x, here.y)
+      colCheckerB = c.get(here.x, here.y)
+      lumToCheck = colChecker[0]
+      lumToCheckB = colChecker[0]
+      
+      if(lumToCheck < maxLum && lumToCheck != 0 && lumToCheckB < maxLum) {
+
+        ptFound = true
+        
+      }
+
+      if(tries > 100) {
+        ptFound = true
+      }
+
+      
+    }
+    wid = randomVal(20, 50)
+    hei = wid*2
+    // console.log("found pt ", here.x, here.y)
+    ship(here.x, here.y, wid, hei, 'white')
     
   }
 }

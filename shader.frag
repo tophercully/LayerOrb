@@ -9,6 +9,7 @@ varying vec2 vTexCoord;
 uniform sampler2D p;
 uniform sampler2D g;
 uniform sampler2D c;
+uniform sampler2D b;
 uniform vec2 u_resolution;
 uniform float seed;
 uniform float dir;
@@ -79,46 +80,46 @@ mat2 rotate(float angle){
 void main() {
   vec2 uv = vTexCoord*u_resolution;
   vec2 st = vTexCoord;
+  vec2 stDebug = vTexCoord;
   vec2 stB = vTexCoord;
   vec2 stPaper = vTexCoord;
 
   //flip the upside down image
   st.y = 1.0 - st.y;
-  stB.y = 1.0 - st.y;
+  stB.y = 1.0 - stB.y;
+  stDebug.y = 1.0 - stDebug.y;
 
   //form noise
-  st.xy += map(random(st.xy), 0.0, 1.0, -0.0005, 0.0005);
+  // st.xy += map(random(st.xy), 0.0, 1.0, -0.0005, 0.0005);
   float warp = map(noise(seed+st.xy*5.0), 0.0, 1.0, -0.01, 0.01);
   //st.xy += warp;
 
-  if(lastPass == true) {
-    //Shrink to fit inside margins
-    float margY = marg;
-    float margX = marg;//margY*0.8;
-    st.x = map(st.x, 0.0, 1.0, -margX, 1.0+margX);
-    st.y = map(st.y, 0.0, 1.0, -marg, 1.0+marg);
-    stB.x = map(stB.x, 0.0, 1.0, -margX, 1.0+margX);
-    stB.y = map(stB.y, 0.0, 1.0, -marg, 1.0+marg);
-  }
+  
   
 
 
   //offset matrix
+  //create textures to reference with our offset rules
   vec4 sampTexP = texture2D(p, st);
-  vec3 contrastSampP = adjustContrast(sampTexP.rgb, 0.0);
-  vec2 sampLum = vec2(0.0, 0.0);
-  
-  sampLum = vec2(0.5, contrastSampP.r);
-  
+  vec4 sampTexB = texture2D(b, st);
+  vec4 sampTexC = texture2D(c, st);
   
   
   vec3 sampColVal = sampTexP.rgb;//texture2D(g, sampLum);
   
-  float offAmt = offsetAmt;//0.008
-  if(st.y > 0.6) {
-    // offAmt *= 0.5;
-  }
   
+  //pull offsetAmt from js global params
+  float offAmt = offsetAmt;//0.008
+
+  //expand st so the movement is covered at the edges
+  st.x = map(st.x, 0.0, 1.0, offAmt, 1.0-offAmt);
+  st.y = map(st.y, 0.0, 1.0, offAmt, 1.0-offAmt);
+  //shrink stB so there is margin
+  stB.x = map(st.x, 0.0, 1.0, -marg, 1.0+marg);
+  stB.y = map(st.y, 0.0, 1.0, -marg, 1.0+marg);
+  
+  
+  //create a few options for what value we use to rotate
   float valA = 0.0;
   float valB = 0.0;
   float valC = 0.0;
@@ -145,63 +146,53 @@ void main() {
   }
   
 
+  //pull rotAmt from js global params
   float rotMult = rotAmt;
-  float rotMod = map(st.y, 0.0, 1.0, 0.0, 1.0);
 
-  //map(valB, 0.0, 1.0, -offAmt, offAmt)*dir;
-  //rotate with one color channel
-  // st.x -= st.x;//center.x;
-  // st.y -= st.y;//center.y;
-  // st.xy *= rotate(map(valA, 0.0, 1.0, -0.0174533*rotMult, 0.0174533*rotMult)*dir);
-  // st.x += offAmt;
-  
+  //warp pixel and move as angle/radius from st.xy
   st.x += cos(3.14159+map(valA, 0.0, 1.0, -0.0174533*rotMult, 0.0174533*rotMult))*offAmt;
   st.y += sin(3.14159+map(valA, 0.0, 1.0, -0.0174533*rotMult, 0.0174533*rotMult))*offAmt;
-  // st.x += st.x;//center.x;
-  // st.y += st.y;//center.y;
-  //push consistently one distance at x color channel direction
-  
-  // st.y += map(valC, 0.0, 1.0, -offAmt, offAmt)*dir;
 
   //pull in our main textures
   vec4 texC = texture2D(c, st);
   vec4 texG = texture2D(g, st);
   vec4 texP = texture2D(p, st);
-  vec3 contrastP = adjustContrast(texP.rgb, 0.1);
-  vec2 lum = vec2(0.5, contrastP.r);
+
+  
+  
+  //debug C layer with no effects
+  vec4 texDebugC = texture2D(c, stDebug);
+  //map luminance as a y value on our gradient
+  vec2 lum = vec2(0.5, texP.r);
   // vec3 gradCol = vec3(sampTexG.r, sampTexG.g, sampTexG.b);
-
+  //pick the color off of g based on luminance
   vec4 colVal = texture2D(g, lum);
-  //color noise
-  float noiseGray = random(st.xy)*0.15;
 
+  
+
+  //initialize color
   vec3 color = vec3(0.0);
   vec3 final = vec3(0.0);
   
-
+  
+  //only apply color on the last pass, keep image black and white for now
   if(lastPass == false) {
     color = texP.rgb;
   } else {
     color = colVal.rgb;
   }
 
-  //debug p layer
-  // color = vec3(texP.r, texP.g, texP.b);
-
-  //Draw margin
-  // float margX = marg;
-  // float margY = margX*0.8;
-  // float offCover = margin
-  if(stB.x <= 0.0 || stB.x >= 1.0 || stB.y <= 0.0 || stB.y >= 1.0) {
-    color = bgc;//vec3(bgc.r, bgc.g, bgc.b);
-  }
 
   
-  // if(texC.r == 0.0) {
-  //   color = bgc.rgb;
-  // }
-  float mixAmt = map(texC.r, 0.0, 0.3, 0.0, 1.0);
 
+  //Draw margin, use 0 and 1 since we shrunk stB
+  if(stB.x <= 0.0 || stB.x >= 1.0 || stB.y <= 0.0 || stB.y >= 1.0) {
+    color = bgc;
+  }
+
+  //luminance of C controls opacity of detail
+  float mixAmt = map(texC.r, 0.0, 0.3, 0.0, 1.0);
+  //apply color on last pass and only if its the foreground elements
   if(lastPass == false && texC.r < 0.3) {
     color = mix(bgc.rgb, color.rgb, mixAmt);
   }
@@ -211,25 +202,28 @@ void main() {
   
     if(texP.r > 0.5) {
       if(texC.r < 1.0) {
-        color = adjustContrast(color, 0.5);
-        color = adjustSaturation(color, 1.0);
+        // color = adjustExposure(color, -0.05);
+        // color = adjustContrast(color, 0.1);
+        color = adjustSaturation(color, 0.5);
       }
     
     } else if(texP.r < 0.5){
       // color = adjustContrast(color, -1.0);
       // color = mix(bgc, color, 0.1);
     }
-    color += noiseGray;
 
-    
+    //color noise
+    float noiseGray = random(st.xy)*0.1;
+    color += noiseGray;
   }
   
   
   
   // color.rgb = texG.rgb;
   // color.rgb = texP.rgb;
-  // color.rgb = texC.rgb;
-
+  // color.rgb = texB.rgb;
+  // color.rgb = texDebugC.rgb;
+  // color = sampColVal;
 
   gl_FragColor = vec4(color, 1.0);
 }

@@ -1,6 +1,6 @@
 w= 1600
 h = 2000
-marg = 0
+marg = 50
 
 let shade;
 function preload() {
@@ -28,18 +28,14 @@ numPasses = 4//3//randomInt(3, 8)//randomInt(2, 6)
 totalDis = 0.1
 rotAmt = 360//1.4//randomVal(1, 5)
 offAmt = 0.02//0.04//randomVal(0.005, 0.05)//totalDis/numPasses
-fullness = 1000//randomInt(10, 30)
-rot = 180*randomInt(0, 1)//randomVal(0, 360)
+fullness = 1200//randomInt(10, 30)
+rot = 180//180*randomInt(0, 1)//randomVal(0, 360)
 
 cloudSz = w*0.25//randomVal(w*0.15, w*0.333)
-numLegs = 4
+numShips = randomInt(1, 10)
 
-//populate leg array
-for(let i = 0; i < fullness; i++) {
-  numLegs[i] = randomInt(0, 4)
-}
 
-shuffLegs = shuff(legNums)
+
 
 function setup() {
   var isMobile = false; //initiate as false
@@ -60,6 +56,7 @@ if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine
   canv = createGraphics(w, h)
   p = createGraphics(w, h)
   c = createGraphics(w, h)
+  b = createGraphics(w, h)
   g = createGraphics(w, h)
   angleMode(DEGREES)
   p.angleMode(DEGREES)
@@ -76,81 +73,34 @@ if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine
 function draw() {
   background(bgc)
   p.background('white')
-  c.background(80)
-  c.translate(w/2, h/2)
-  c.rotate(rot)
-  c.translate(-w/2, -h/2)
+  c.background(0)
+  // c.translate(w/2, h/2)
+  // c.rotate(rot)
+  // c.translate(-w/2, -h/2)
 
   //Sketch
 
   //Build the gradient LUT
   gradLUT()
   //gradient background
-  // gradBG()
+  gradBG()
   paintBG()
 
-  //setting safe to draw area/cutout
-  // cWave()
-  // bezScrib()
   c.noStroke()
-  // cShaper(w/2, h/2, w*0.9)
-  // cSpotLight(w/2, h/2, w*0.5)
-  
-  // c.fill(200)
-  // c.circle(randomVal(0, w), randomVal(0, h*0.333), 150)
-  // for(let i = 0; i < 5; i++) {
-  //   dis = map(i, 0, 5, 0.75, 0)
-  //   val = map(i, 0, 5, 255, 0)
-  //   c.fill(val)
-  //   placard(dis)
-  // }
-  
-  // //subject
-  // centerX = w*0.5//randomVal(w*0.5, w*0.75)
-  // xOff = 0//randomVal(-300, 300)
-  // for(let i = 0; i < fullness; i++) {
-    
-    
-  //   here = ptFromAng(centerX, h*0.5, randomVal(0, 360), randomVal(0, cloudSz))
-  //   anchor = createVector(randomVal(centerX+(cloudSz*1.75), centerX-(cloudSz*1.75)), h)
-  //   midAmt = randomVal(0.25, 0.85)
-  //   midPt = createVector(randomVal(centerX+(cloudSz*1.5), centerX-(cloudSz*1.5)), map(midAmt, 0, 1, here.y, anchor.y))
 
-  //   //raindrops
-  //   // for(let i = 0; i < 5; i++) {
-  //   //   // c.drawingContext.setLineDash([randomVal(100, 300), randomVal(100, 300)])
-  //   //   xMod = randomVal(-10, 10)
-  //   //   c.push()
-  //   //   c.stroke(randomVal(150, 255))
-  //   //   c.strokeWeight(randomVal(0.25, 1))
-  //   //   // c.line(here.x+xMod, here.y, here.x+xMod+xOff, h)
-  //   //   c.bezier(here.x, here.y, here.x, here.y, midPt.x, midPt.y, anchor.x, anchor.y, anchor.x, anchor.y)
-  //   //   c.pop()
-  //   // }
-    
-
-  //   //cloud
-  //   c.fill(randomVal(180, 255))//180, 255
-  //   cShaper(here.x, here.y, randomVal(100, w*0.25))    
-    
-
-  //   // there = ptFromAng(w/2, h/2, randomVal(180, 360), randomVal(0, w*0.1))
-  //   // cShaper(here.x, here.y, randomVal(100, w*0.5))   
-  // }
-
-  
   //bg waves
-  wave(60, 100)
+  wave(81, 120)
   wave(120, 150)
 
   //ships
-  for(let i = 0; i < 5; i++) {
-    here = ptFromAng(w/2, h/2, randomVal(0, 360), randomVal(w*0.25, w*0.75))
-    wid = randomVal(10, 50)
-    hei = wid*2
-    ship(here.x, here.y, wid, hei)
-  }
-
+  // for(let i = 0; i < numShips; i++) {
+  //   here = createVector(randomVal(100, w-100), randomVal(100, h*0.666)) //ptFromAng(w/2, h/2, randomVal(0, 360), randomVal(w*0.25, w*0.75))
+  //   wid = randomVal(20, 50)
+  //   hei = wid*2
+  //   ship(here.x, here.y, wid, hei)
+  // }
+  shipPlacer()
+  c.noStroke()
   //final wave
   wave(180, 255)
    
@@ -185,6 +135,7 @@ function draw() {
    shade.setUniform("p", p);
    shade.setUniform("g", g);
    shade.setUniform("c", c);
+   shade.setUniform("b", b);
    shade.setUniform("offsetAmt", offAmt)
    shade.setUniform("rotAmt", rotAmt)
    shade.setUniform("offsetVals", randomInt(1, 5))
@@ -207,6 +158,7 @@ function draw() {
     } else {
       firstPass = false
     }
+
     shade.setUniform("firstPass", firstPass)
     // gradLUT()
     shade.setUniform("intens", 1)
@@ -218,6 +170,9 @@ function draw() {
    }
    //final display
    lastPass = true
+   p.translate(w/2, h/2)
+   p.rotate(rot)
+   p.translate(-w/2, -h/2)
    shade.setUniform("lastPass", lastPass)
    shade.setUniform("p", p)
   //  shade.setUniform("g", p);
@@ -225,11 +180,12 @@ function draw() {
    recur.rect(0, 0, w, h)
    image(recur, -w/2, -h/2)
 
-   
+  
    
 
 
    fxpreview()
+  //  save("waves"+fxhash)
 
   //  setTimeout(() => {
   //   window.location.reload();
