@@ -142,20 +142,6 @@ function gradLUT() {
     }
 }
 
-function gridLut() {
-  scl = 30
-  for(let y = 0; y < 30; y+= h/30) {
-      nY = randomVal(0, 1)//map(y, 0, h, 0, 1)
-      colScale = chroma.scale(truePal.slice(0, numColors))//.classes(numColors)
-      hueCol = colScale(nY).hex()
-      col = hueCol
-      g.stroke(col)
-      g.strokeWeight(h/scl)
-      // g.line(0, y, w,y)
-      g.rect(w/2, y, w, h/30)
-  }
-}
-
 function sineWave() {
   capDecider = randomInt(0, 1)
   if(capDecider == 0) {
@@ -188,40 +174,9 @@ function sineWave() {
   }
 }
 
-function cWave() {
-  capDecider = randomInt(0, 1)
-  if(capDecider == 0) {
-    c.strokeCap(SQUARE)
-  } else {
-    c.strokeCap(ROUND)
-  }
-  
-  
-  c.drawingContext.setLineDash([randomVal(10, 500), randomVal(10, 500)])
-  rows = randomInt(5, 50)
-  cellH = (h-(marg*2))/rows
-  freq = randomVal(2, 30)
-  amp = randomVal(0, 1)
-  wt = cellH/4
-  finalCol = chroma('black').alpha(randomVal(0.05, 0.3)+randomVal(-0.0001, 0.0001)).hex()
-  c.noFill()
-  c.strokeWeight(wt)
-  c.stroke(finalCol)
-  for(let y = 0; y < rows+1; y++) {
-    c.drawingContext.lineDashOffset=randomVal(0, 500)
-    c.beginShape()
-    for(let x = 0; x < w; x++) {
-      fullRot = map(x, 0, w, 0, 360)
-      yOff = map(sin(fullRot*freq), -1, 1, -wt*amp, wt*amp)
-      // yOff = map(noise(x*0.001), 0, 1, -wt*amp, wt*amp)
-      c.vertex(x, (y*cellH+(cellH/2))+yOff)
-    } 
-    c.endShape()
-  }
-}
+
 
 function gradBG() {
-  
     scl = 200
     thisPal = ['black', 'gray']
       for(let y = -200; y < h+200; y+=h/scl) {
@@ -233,7 +188,6 @@ function gradBG() {
         c.strokeWeight(h/scl)
         c.line(0, y, w,y)
       }
-  
 }
 
 function paintBG() {
@@ -261,93 +215,19 @@ function cShaper(x, y, r) {
   c.endShape(CLOSE)
 }
 
-function cFlower(x, y, r) {
-  startAng = randomVal(0, 360)
-  numSides = randomInt(3, 7)
-  if(numSides > 6) {
-    numSides = 360
-  }
-  numPetals = 5
-  c.beginShape()
-  for(let i = 0; i < 360; i++) {
-    sineMod = map(abs(sin(i*numPetals)), 0, 1, 0.5, 1)
-    xC = cos(startAng+i)*((r/2)*sineMod)
-    yC = sin(startAng+i)*((r/2)*sineMod)
-    c.vertex(x+xC, y+yC)
-  }
-  c.endShape(CLOSE)
-}
-
-function cSpotLight(x, y, r) {
-  dis = randomVal(0, r/2)
-  edge = ptFromAng(x, y, randomVal(0, 360), dis)
-  center = createVector(x, y)
-  dens = r
-  expo = 0.3
-
-  for(let i = 0; i < dens; i++) {
-
-    xC = map(i, 0, dens, center.x, edge.x)
-    yC = map(i, 0, dens, center.y, edge.y)
-    rad = map(i, 0, dens, r, 0)
-    val = map(pow(i, expo), pow(dens*0.1, expo), pow(dens, expo), 0, 1)
-    c.fill(chroma('white').alpha(val).hex())
-    c.circle(xC, yC, rad)
-  }
-}
-
-function cScale(x, y, r) {
-  dis = randomVal(0, r/2)
-  edge = ptFromAng(x, y, randomVal(0, 360), dis)
-  center = createVector(x, y)
-  dens = r
-  expo = 0.1
-
-  for(let i = 0; i < dens; i++) {
-
-    xC = map(i, 0, dens, center.x, edge.x)
-    yC = map(i, 0, dens, center.y, edge.y)
-    rad = map(i, 0, dens, r, 0)
-    val = map(pow(i, expo), pow(dens*0.1, expo), pow(dens, expo), 1, 0)*255
-    c.fill(val)
-    c.circle(xC, yC, rad)
-  }
-}
-
-function bezScrib() {
-  bezPts[0] = createVector(randomVal(0, w), randomVal(0, h))
-  numPts = fullness//randomInt(5, 20)
-  c.noFill()
-  c.stroke('white')
-  c.strokeWeight(10)
-  c.beginShape()
-  for(let i = 0; i < fullness; i++) {
-    c.curveVertex(bezPts[i].x, bezPts[i].y)
-  }
-  c.endShape()
-}
-
-function building() {
-  c.fill('white')
-  c.rectMode(CENTER)
-  c.rect(randomVal(0, w), h*0.75, randomVal(100, 200), randomVal(300, 600))
-}
-
 function ship(xPos, yPos, wid, hei, col) {
-  ang = randomVal(-90, 90)//angBetween(x, y, w/2, h/2)+90
+  ang = randomVal(-90, 90)
   shipTrail(xPos, yPos, ang+90, randomVal(400, 800))
-
-  val = col//map(wid, 20, 100, 200, 255)
+  val = col
   c.fill(val)
-  
   c.push()
   c.stroke(0)
   c.strokeWeight(3)
   c.translate(xPos, yPos)
   
   c.rotate(ang)
-  startAng = -90//angBetween(x, y, w/2, h/2)-90
-  numSides = 3//randomInt(3, 7)
+  startAng = -90
+  numSides = 3
   if(numSides > 6) {
     numSides = 360
   }
@@ -359,8 +239,6 @@ function ship(xPos, yPos, wid, hei, col) {
   }
   c.endShape(CLOSE)
   c.pop()
-
-  
 }
 
 function shipTrail(x, y, ang, spd) {
@@ -368,50 +246,18 @@ function shipTrail(x, y, ang, spd) {
   c.stroke(20)
   c.strokeWeight(randomVal(3, 10))
   c.beginShape() 
-  // c.curveVertex(x, y)
   here = ptFromAng(x, y, ang+180, spd)
   c.curveVertex(here.x, here.y)
-  
-  
   for(let i = 0; i < 5; i++) {
     here = ptFromAng(x, y, ang+randomVal(-20, 20), spd*i)
-
     c.curveVertex(here.x, here.y)
-
-    
   }
   c.endShape()
 }
 
-function placard(maxDis) {
-  //top layer
-  dens = randomInt(3, 10)
-  c.beginShape()
-  c.vertex(0, 0)
-  c.vertex(w, 0)
-  for(let i = -1 ; i < dens+1; i++) {
-    xPos = map(i, 0, dens, w, 0)
-    yPos = map(randomVal(0, maxDis), 0, 1, 0, h)
-    c.vertex(xPos, yPos)
-  }
-  c.endShape(CLOSE)
-
-  //bottom layer
-  dens = randomInt(3, 10)
-  c.beginShape()
-  c.vertex(w, h)
-  c.vertex(0, h)
-  for(let i = -1 ; i < dens+1; i++) {
-    xPos = map(i, 0, dens, 0, w)
-    yPos = map(randomVal(0, maxDis), 0, 1, h, 0)
-    c.vertex(xPos, yPos)
-  }
-  c.endShape(CLOSE)
-}
-
 function wave(min, max) {
   
-  numWaves = 1//randomVal(1, 2)
+  numWaves = 1
   yLimMod = randomVal(0, 360)
   yMax = map(max, 0, 255, h, h*0.333)
   waveExpo = 2
@@ -431,13 +277,7 @@ function wave(min, max) {
     here = createVector(xPos+yOff, h-yPos)
 
     c.rectMode(CENTER)
-    cShaper(here.x, here.y, randomVal(100, w*0.1))
-    // cSpotLight(here.x, here.y, randomVal(100, w*0.6))
-
-    // c.fill(randomVal(100, 150))
-    // there = ptFromAng(w/2, 0, randomVal(0, 180), randomVal(0, w*0.5))
-    // cShaper(there.x, there.y, randomVal(100, w*0.5))
-    
+    cShaper(here.x, here.y, randomVal(100, w*0.1)) 
   }
 }
 
@@ -450,10 +290,8 @@ function shipPlacer() {
     maxLum = 80
     while(ptFound == false) {
       tries++
-      
       here = createVector(randomInt(pad, w-pad), randomInt(pad, h*0.666))
       hereB = ptFromAng(here.x, here.y, randomVal(0, 360), 50)
-
       colChecker = c.get(here.x, here.y)
       colCheckerB = c.get(here.x, here.y)
       lumToCheck = colChecker[0]
@@ -464,17 +302,12 @@ function shipPlacer() {
         ptFound = true
         
       }
-
       if(tries > 100) {
         ptFound = true
       }
-
-      
     }
     wid = randomVal(20, 50)
     hei = wid*2
-    // console.log("found pt ", here.x, here.y)
     ship(here.x, here.y, wid, hei, 'white')
-    
   }
 }

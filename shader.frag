@@ -12,17 +12,15 @@ uniform sampler2D c;
 uniform sampler2D b;
 uniform vec2 u_resolution;
 uniform float seed;
-uniform float dir;
-uniform float intens;
 uniform vec3 bgc;
-uniform vec2 center;
 uniform float marg;
 uniform float offsetAmt;
 uniform float rotAmt;
+uniform float pxSize;
 uniform bool firstPass;
 uniform bool lastPass;
 uniform float offsetVals;
-uniform float angThisPass;
+uniform float rot;
 
 float map(float value, float inMin, float inMax, float outMin, float outMax) {
   return outMin + (outMax - outMin) * (value - inMin) / (inMax - inMin);
@@ -90,33 +88,28 @@ void main() {
   stDebug.y = 1.0 - stDebug.y;
 
   //form noise
-  // st.xy += map(random(st.xy), 0.0, 1.0, -0.0005, 0.0005);
-  float warp = map(noise(seed+st.xy*5.0), 0.0, 1.0, -0.01, 0.01);
-  //st.xy += warp;
-
-  
-  
-
+  st.xy += map(random(st.xy), 0.0, 1.0, -0.0005, 0.0005);
 
   //offset matrix
   //create textures to reference with our offset rules
   vec4 sampTexP = texture2D(p, st);
-  vec4 sampTexB = texture2D(b, st);
   vec4 sampTexC = texture2D(c, st);
   
-  
-  vec3 sampColVal = sampTexP.rgb;//texture2D(g, sampLum);
-  
+  vec3 sampColVal = sampTexP.rgb;
   
   //pull offsetAmt from js global params
-  float offAmt = offsetAmt;//0.008
+  float offAmt = offsetAmt;
 
   //expand st so the movement is covered at the edges
   st.x = map(st.x, 0.0, 1.0, offAmt, 1.0-offAmt);
-  st.y = map(st.y, 0.0, 1.0, offAmt, 1.0-offAmt);
-  //shrink stB so there is margin
+  st.y = map(st.y, 0.0, 1.0, (offAmt*0.8), 1.0-(offAmt*0.8));
+
+  if(lastPass == true) {
+    //shrink stB so there is margin
   stB.x = map(st.x, 0.0, 1.0, -marg, 1.0+marg);
-  stB.y = map(st.y, 0.0, 1.0, -marg, 1.0+marg);
+  stB.y = map(st.y, 0.0, 1.0, -(marg*0.8), 1.0+(marg*0.8));
+  }
+  
   
   
   //create a few options for what value we use to rotate
@@ -157,14 +150,11 @@ void main() {
   vec4 texC = texture2D(c, st);
   vec4 texG = texture2D(g, st);
   vec4 texP = texture2D(p, st);
-
-  
   
   //debug C layer with no effects
   vec4 texDebugC = texture2D(c, stDebug);
   //map luminance as a y value on our gradient
   vec2 lum = vec2(0.5, texP.r);
-  // vec3 gradCol = vec3(sampTexG.r, sampTexG.g, sampTexG.b);
   //pick the color off of g based on luminance
   vec4 colVal = texture2D(g, lum);
 
@@ -181,9 +171,6 @@ void main() {
   } else {
     color = colVal.rgb;
   }
-
-
-  
 
   //Draw margin, use 0 and 1 since we shrunk stB
   if(stB.x <= 0.0 || stB.x >= 1.0 || stB.y <= 0.0 || stB.y >= 1.0) {
@@ -202,28 +189,14 @@ void main() {
   
     if(texP.r > 0.5) {
       if(texC.r < 1.0) {
-        // color = adjustExposure(color, -0.05);
-        // color = adjustContrast(color, 0.1);
         color = adjustSaturation(color, 0.5);
       }
-    
-    } else if(texP.r < 0.5){
-      // color = adjustContrast(color, -1.0);
-      // color = mix(bgc, color, 0.1);
-    }
+    } 
 
     //color noise
     float noiseGray = random(st.xy)*0.1;
     color += noiseGray;
   }
-  
-  
-  
-  // color.rgb = texG.rgb;
-  // color.rgb = texP.rgb;
-  // color.rgb = texB.rgb;
-  // color.rgb = texDebugC.rgb;
-  // color = sampColVal;
 
   gl_FragColor = vec4(color, 1.0);
 }

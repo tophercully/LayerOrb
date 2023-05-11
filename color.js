@@ -191,12 +191,10 @@ const vint = [
   '#FF8E91'
 ]
 const wildberry = [
-  'black',
   '#62A8E5',
   '#BB76CF',
   '#407060',
   '#FF6C2F',
-  '#fff0e0',
 ]
 
 const blockA = ["#E4E7E0","#F0829D","#428E8A","#F4E8AE","#109BC4","#1C1E1B"]
@@ -211,11 +209,7 @@ const scifi = ["#4ea459","#47bc89","#38928a","#e2a48e","#c35548","#33778a","#8bd
 
 const yeller = ["#29221c","#8e3b2d","#b27469","#f49f10","#fedb49","#e7d0c0","#ceb29a","#c9ced1","#b0b8bb","#646d4e"]
 
-const overlook = ["#3d4d20","#ad0b08","#1d5473","#798b97","#edd2b7","#b76439","#d2955f","#282723"]
-
-const helmetFace = ["#617a5c","#a3ab86","#accbf9","#f3c9f4","#030305","#cfd9e3","#e3e4e8"]
-
-const fullColor = ["#1f46c8", "#44B8F5", "#EF3C19", "#FFEB00", "#4FA55E", '#b44fd0', "#ea5920", '#FF48B0', '#37cdb2']
+const overlook = ["#3d4d20","#ad0b08","#1d5473","#798b97","#b76439","#d2955f"]
 
 const retroBaby = [
   '#8fb886', 
@@ -229,33 +223,28 @@ comboB = ["#efa738","#3796f0"] //LOVE
 comboC = ["#F56905", "#074EE5"] //also love
 comboD = ["#2C4CB8","#EF3C19"]// so poppin
 comboE = ['#F57103', '#00598D', '#214C25'] //love this
-
 comboF = ['#de3be1', "#e9a32b"]
 
-achro = ['black', 'white']
 
-
-const pals = [shepard, source, soft, mcWoot, comboE, comboA, comboF];
+const pals = [shepard, source, soft, mcWoot, comboE, comboA, comboF, burn, retroBaby, wildberry];
 
 const palNames = [
   "Commander Shepard",
   "Source",
   "Soft",
   "McWoot",
-  "comboE",
-  "comboA",
-  "comboF",
-  "O'Keefe",
-  "Flower Market",
-  "Oil Paint"
+  "Terra",
+  "Spice",
+  "Royal",
+  "Burn",
+  "Retro Baby",
+  "Wildberry"
 ];
 
 //Palette parameters
 palNum = randomInt(0, pals.length-1);
 pal = pals[palNum];
 palName = palNames[palNum];
-
-console.log(palName)
 
 //Setup for the next step
 lighterPal = [];
